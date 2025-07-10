@@ -1,0 +1,2049 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPilot - Navegador Inteligente para el Aula</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo h1 {
+            color: #1e40af;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .class-info {
+            background: #eff6ff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: #1e40af;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .topic-selector {
+            background: #f0f9ff;
+            border: 2px solid #bae6fd;
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #1e40af;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+
+        .main-panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px;
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .student-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .student-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .student-card.excellent {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .student-card.good {
+            border-color: #6366f1;
+            background: #f0f9ff;
+        }
+
+        .student-card.regular {
+            border-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .student-card.struggling {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .student-card.unassessed {
+            border-color: #9ca3af;
+            background: #f9fafb;
+        }
+
+        .student-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .student-status {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        .student-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #e2e8f0;
+        }
+
+        .indicator.active-excellent { background: #10b981; }
+        .indicator.active-good { background: #6366f1; }
+        .indicator.active-regular { background: #f59e0b; }
+        .indicator.active-struggling { background: #ef4444; }
+
+        .student-details {
+            font-size: 0.7rem;
+            color: #64748b;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .action-btn small {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        .action-btn.secondary {
+            background: #64748b;
+        }
+
+        .action-btn.secondary:hover {
+            background: #475569;
+        }
+
+        .action-btn.danger {
+            background: #ef4444;
+        }
+
+        .action-btn.danger:hover {
+            background: #dc2626;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .analysis-panel, .recommendations-panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .analysis-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .stat-card.excellent { border-left-color: #10b981; }
+        .stat-card.good { border-left-color: #6366f1; }
+        .stat-card.regular { border-left-color: #f59e0b; }
+        .stat-card.struggling { border-left-color: #ef4444; }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .progress-section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .progress-text {
+            font-size: 0.9rem;
+            color: #64748b;
+            text-align: center;
+        }
+
+        .recommendation-item {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .recommendation-item.urgent {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .recommendation-item.success {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .recommendation-item::before {
+            content: attr(data-icon);
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            padding: 4px;
+            border-radius: 50%;
+            font-size: 1rem;
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+
+        .recommendation-action {
+            color: #475569;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .recommendation-steps {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .implement-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-right: 8px;
+            transition: all 0.2s;
+        }
+
+        .implement-btn:hover {
+            background: #059669;
+        }
+
+        .implement-btn.implemented {
+            background: #64748b;
+            cursor: default;
+        }
+
+        .history-item {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-left: 3px solid #64748b;
+        }
+
+        .history-time {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .history-action {
+            font-size: 0.9rem;
+            color: #1e293b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 600px;
+            width: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .close-btn {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .evaluation-section {
+            margin-bottom: 20px;
+        }
+
+        .evaluation-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 15px;
+        }
+
+        .evaluation-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .option-btn {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .option-btn:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .option-btn.selected {
+            border-color: #3b82f6;
+            background: #dbeafe;
+        }
+
+        .option-btn.excellent { border-color: #10b981; background: #f0fdf4; }
+        .option-btn.good { border-color: #6366f1; background: #f0f9ff; }
+        .option-btn.regular { border-color: #f59e0b; background: #fffbeb; }
+        .option-btn.struggling { border-color: #ef4444; background: #fef2f2; }
+
+        .option-btn.excellent.selected { background: #dcfce7; }
+        .option-btn.good.selected { background: #e0e7ff; }
+        .option-btn.regular.selected { background: #fef3c7; }
+        .option-btn.struggling.selected { background: #fee2e2; }
+
+        .option-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .option-desc {
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.3;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .alert {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert.success {
+            background: #f0fdf4;
+            border-color: #10b981;
+        }
+
+        .alert.danger {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 5px;
+        }
+
+        .priority-student {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .priority-student.regular {
+            background: #fffbeb;
+            border-color: #fed7aa;
+        }
+
+        .priority-student.struggling {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .priority-info {
+            flex: 1;
+        }
+
+        .priority-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+
+        .priority-status {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .priority-action {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .priority-action:hover {
+            background: #2563eb;
+        }
+
+        .alert.success .alert-title {
+            color: #065f46;
+        }
+
+        .alert.danger .alert-title {
+            color: #991b1b;
+        }
+
+        .alert-message {
+            color: #78350f;
+            font-size: 0.9rem;
+        }
+
+        .alert.success .alert-message {
+            color: #064e3b;
+        }
+
+        .alert.danger .alert-message {
+            color: #7f1d1d;
+        }
+
+        .topic-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1500;
+        }
+
+        .topic-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .topic-btn {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .topic-btn:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .topic-btn.selected {
+            border-color: #3b82f6;
+            background: #dbeafe;
+        }
+
+        .topic-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1e40af;
+        }
+
+        .topic-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        /* Loading indicator for export */
+        .loading-indicator {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 2000;
+            text-align: center;
+        }
+
+        .loading-indicator.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .students-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .analysis-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                flex-direction: column;
+            }
+            
+            .evaluation-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🧭</div>
+                <h1>EduPilot</h1>
+            </div>
+            <div class="class-info">
+                <span>📚</span>
+                <span id="current-subject">Matemáticas 3°A</span>
+                <span>•</span>
+                <span>20 estudiantes</span>
+                <span>•</span>
+                <span id="current-date"></span>
+            </div>
+            <div class="topic-selector" onclick="openTopicSelector()">
+                <span id="current-topic">Tema: Fracciones</span> 📝
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-panel">
+            <div class="panel-title">
+                <span>👥</span>
+                Radar de Clase - Monitoreo en Tiempo Real
+            </div>
+
+            <div class="quick-actions">
+                <button class="action-btn" onclick="showInstructions()">❓ Cómo usar</button>
+                <button class="action-btn secondary" onclick="resetAll()">🔄 Reiniciar todo</button>
+                <button class="action-btn secondary" onclick="exportData()">📊 Exportar datos</button>
+            </div>
+
+            <div class="alert success show" id="instructions-alert">
+                <div class="alert-title">📋 Guía de Uso - Flujo Completo</div>
+                <div class="alert-message">
+                    <strong>1° EVALUAR:</strong> Haz clic en cada estudiante para evaluar su comprensión durante la clase.<br>
+                    <strong>2° ANALIZAR:</strong> Observa las recomendaciones automáticas que aparecen.<br>
+                    <strong>3° EXPORTAR:</strong> Una vez evaluados varios estudiantes, usa "Exportar datos" para generar reportes.
+                </div>
+            </div>
+
+            <div class="alert" id="class-alert">
+                <div class="alert-title">🚨 Atención Requerida</div>
+                <div class="alert-message" id="alert-message"></div>
+            </div>
+
+            <div class="students-grid" id="students-grid">
+                <!-- Los estudiantes se generarán dinámicamente -->
+            </div>
+
+            <div class="progress-section">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="success-progress"></div>
+                </div>
+                <div class="progress-text">
+                    <strong>Objetivo: 75% de estudiantes "Domina" o "Comprende"</strong><br>
+                    Progreso actual: <span id="success-percentage">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="analysis-panel">
+                <div class="panel-title">
+                    <span>📊</span>
+                    Análisis de Comprensión
+                </div>
+                <div class="analysis-stats">
+                    <div class="stat-card excellent">
+                        <div class="stat-value" id="students-excellent">0</div>
+                        <div class="stat-label">Domina</div>
+                    </div>
+                    <div class="stat-card good">
+                        <div class="stat-value" id="students-good">0</div>
+                        <div class="stat-label">Comprende</div>
+                    </div>
+                    <div class="stat-card regular">
+                        <div class="stat-value" id="students-regular">0</div>
+                        <div class="stat-label">En proceso</div>
+                    </div>
+                    <div class="stat-card struggling">
+                        <div class="stat-value" id="students-struggling">0</div>
+                        <div class="stat-label">Necesita apoyo</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recommendations-panel">
+                <div class="panel-title">
+                    <span>🎯</span>
+                    Recomendaciones Pedagógicas
+                </div>
+                <div id="recommendations-container">
+                    <div class="recommendation-item" data-icon="👋">
+                        <div class="recommendation-title">¡Bienvenido a EduPilot!</div>
+                        <div class="recommendation-action">
+                            Comienza evaluando a cada estudiante haciendo click en su tarjeta. 
+                            Las recomendaciones aparecerán automáticamente.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analysis-panel">
+                <div class="panel-title">
+                    <span>👥</span>
+                    Estudiantes Prioritarios
+                </div>
+                <div id="priority-students">
+                    <div style="text-align: center; color: #64748b; padding: 20px;">
+                        Los estudiantes que necesitan atención aparecerán aquí automáticamente
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div class="loading-indicator" id="loading-indicator">
+        <div class="spinner"></div>
+        <div>Generando archivo...</div>
+    </div>
+
+    <!-- Modal de evaluación de estudiante -->
+    <div class="modal" id="student-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Evaluar Estudiante</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <div class="evaluation-section">
+                <div class="evaluation-title">¿Cómo evalúas la comprensión del tema?</div>
+                <div class="evaluation-options">
+                    <div class="option-btn excellent" onclick="selectOption('excellent')">
+                        <div class="option-title">✅ Domina</div>
+                        <div class="option-desc">Comprende perfectamente, puede explicar a otros, resuelve problemas complejos</div>
+                    </div>
+                    <div class="option-btn good" onclick="selectOption('good')">
+                        <div class="option-title">👍 Comprende</div>
+                        <div class="option-desc">Entiende los conceptos principales, participa activamente, hace preguntas relevantes</div>
+                    </div>
+                    <div class="option-btn regular" onclick="selectOption('regular')">
+                        <div class="option-title">⚠️ En proceso</div>
+                        <div class="option-desc">Comprensión parcial, necesita más práctica, muestra algunas dudas</div>
+                    </div>
+                    <div class="option-btn struggling" onclick="selectOption('struggling')">
+                        <div class="option-title">🚨 Necesita apoyo</div>
+                        <div class="option-desc">Dificultades evidentes, confundido, requiere atención individualizada</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="action-btn secondary" onclick="closeModal()">Cerrar</button>
+                <button class="action-btn" onclick="saveEvaluation()" id="save-btn" disabled>Guardar Evaluación</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de selección de tema -->
+    <div class="topic-modal" id="topic-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Selecciona el tema de la clase</h3>
+                <button class="close-btn" onclick="closeTopicModal()">&times;</button>
+            </div>
+            
+            <div class="topic-options">
+                <div class="topic-btn" onclick="selectTopic('fracciones', 'Fracciones')">
+                    <div class="topic-title">Fracciones</div>
+                    <div class="topic-desc">Operaciones básicas, simplificación, comparación</div>
+                </div>
+                <div class="topic-btn" onclick="selectTopic('ecuaciones', 'Ecuaciones Lineales')">
+                    <div class="topic-title">Ecuaciones Lineales</div>
+                    <div class="topic-desc">Resolución de ecuaciones de primer grado</div>
+                </div>
+                <div class="topic-btn" onclick="selectTopic('geometria', 'Geometría')">
+                    <div class="topic-title">Geometría</div>
+                    <div class="topic-desc">Figuras planas, perímetros, áreas</div>
+                </div>
+                <div class="topic-btn" onclick="selectTopic('porcentajes', 'Porcentajes')">
+                    <div class="topic-title">Porcentajes</div>
+                    <div class="topic-desc">Cálculo de porcentajes, aumentos y descuentos</div>
+                </div>
+                <div class="topic-btn" onclick="selectTopic('estadistica', 'Estadística')">
+                    <div class="topic-title">Estadística</div>
+                    <div class="topic-desc">Gráficos, medidas de tendencia central</div>
+                </div>
+                <div class="topic-btn" onclick="selectTopic('algebra', 'Álgebra')">
+                    <div class="topic-title">Álgebra</div>
+                    <div class="topic-desc">Expresiones algebraicas, factorización</div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="action-btn secondary" onclick="closeTopicModal()">Cancelar</button>
+                <button class="action-btn" onclick="confirmTopic()" id="confirm-topic-btn" disabled>Confirmar Tema</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // Datos de estudiantes
+        const studentNames = [
+            'Ana García', 'Carlos López', 'María Rodríguez', 'José Martín', 'Laura Pérez',
+            'Diego Silva', 'Sofía Morales', 'Miguel Herrera', 'Valentina Cruz', 'Sebastián Ruiz',
+            'Isabella Torres', 'Mateo Jiménez', 'Camila Vargas', 'Daniel Castillo', 'Antonella Reyes',
+            'Joaquín Mendoza', 'Gabriela Flores', 'Nicolás Guerrero', 'Renata Vega', 'Emilio Ramos'
+        ];
+
+        let students = [];
+        let currentStudentIndex = null;
+        let selectedEvaluation = null;
+        let currentTopic = 'fracciones';
+        let selectedTopic = null;
+
+        // Mapas de recomendaciones por tema
+        const topicRecommendations = {
+            fracciones: {
+                excellent: "Propón problemas de fracciones con contexto real",
+                good: "Refuerza con ejercicios de comparación de fracciones",
+                regular: "Usa material manipulativo para visualizar fracciones",
+                struggling: "Comienza con fracciones simples usando círculos divididos"
+            },
+            ecuaciones: {
+                excellent: "Introduce ecuaciones con dos variables",
+                good: "Practica con ecuaciones que requieren dos pasos",
+                regular: "Refuerza el concepto de igualdad con balanzas",
+                struggling: "Usa ecuaciones simples con una sola operación"
+            },
+            geometria: {
+                excellent: "Introduce cálculos de volumen y área de figuras complejas",
+                good: "Practica con figuras compuestas",
+                regular: "Refuerza fórmulas básicas con ejemplos visuales",
+                struggling: "Identifica figuras y sus propiedades básicas"
+            },
+            porcentajes: {
+                excellent: "Aplica porcentajes en problemas financieros reales",
+                good: "Practica con descuentos e incrementos",
+                regular: "Usa la regla de tres para calcular porcentajes",
+                struggling: "Comienza con porcentajes simples (10%, 25%, 50%)"
+            },
+            estadistica: {
+                excellent: "Introduce conceptos de probabilidad",
+                good: "Interpreta gráficos más complejos",
+                regular: "Practica con cálculo de promedios",
+                struggling: "Organiza datos en tablas simples"
+            },
+            algebra: {
+                excellent: "Introduce factorización de trinomios",
+                good: "Practica con productos notables",
+                regular: "Refuerza operaciones con términos semejantes",
+                struggling: "Identifica variables y coeficientes"
+            }
+        };
+
+        // Variable global para verificar si XLSX se cargó correctamente
+        let xlsxLoaded = false;
+
+        // Verificar carga de librerías al inicializar
+        function checkDependencies() {
+            xlsxLoaded = (typeof XLSX !== 'undefined' && XLSX.version);
+        }
+
+        // Inicializar aplicación
+        function initializeApp() {
+            // Verificar dependencias
+            checkDependencies();
+            
+            // Mostrar fecha actual del sistema (se actualiza automáticamente cada día)
+            updateCurrentDate();
+
+            // Inicializar estudiantes con validación
+            students = studentNames.map((name, index) => {
+                if (!name || typeof name !== 'string') {
+                    console.warn(`Nombre de estudiante inválido en índice ${index}`);
+                    return null;
+                }
+                return {
+                    id: index,
+                    name: name.trim(),
+                    status: 'unassessed',
+                    timestamp: null
+                };
+            }).filter(student => student !== null); // Filtrar estudiantes inválidos
+
+            renderStudents();
+            updateAnalysis();
+            updatePriorityStudents();
+            
+            // Inicializar estado del botón de exportar
+            updateExportButton(0);
+        }
+
+        // Actualizar fecha actual
+        function updateCurrentDate() {
+            const now = new Date();
+            const dateElement = document.getElementById('current-date');
+            
+            // Formatear fecha en español
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            
+            const formattedDate = now.toLocaleDateString('es-ES', options);
+            dateElement.textContent = formattedDate;
+            
+            // Hacer la fecha clickeable para cambiarla si es necesario
+            dateElement.style.cursor = 'pointer';
+            dateElement.title = 'Click para cambiar fecha si es necesario';
+            dateElement.onclick = changeDate;
+        }
+
+        // Actualizar estudiantes prioritarios
+        function updatePriorityStudents() {
+            const container = document.getElementById('priority-students');
+            if (!container) return; // Validación del elemento
+            
+            const priorityStudents = students.filter(s => 
+                s && s.status && (s.status === 'struggling' || s.status === 'regular') // Validación añadida
+            ).sort((a, b) => {
+                // Priorizar: struggling primero, luego regular
+                if (a.status === 'struggling' && b.status === 'regular') return -1;
+                if (a.status === 'regular' && b.status === 'struggling') return 1;
+                return 0;
+            });
+
+            container.innerHTML = '';
+
+            if (priorityStudents.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #64748b; padding: 20px; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;">
+                        ✅ <strong>¡Excelente!</strong><br>
+                        No hay estudiantes que requieran atención especial en este momento.
+                    </div>
+                `;
+            } else {
+                priorityStudents.forEach(student => {
+                    if (!student || !student.name) return; // Validación adicional
+                    
+                    const item = document.createElement('div');
+                    item.className = `priority-student ${student.status}`;
+                    
+                    const urgencyText = student.status === 'struggling' ? 
+                        '🚨 Necesita apoyo urgente' : 
+                        '⚠️ Necesita refuerzo';
+                    
+                    const actionText = student.status === 'struggling' ? 
+                        'Atender' : 
+                        'Reforzar';
+                    
+                    item.innerHTML = `
+                        <div class="priority-info">
+                            <div class="priority-name">${student.name}</div>
+                            <div class="priority-status">${urgencyText}</div>
+                        </div>
+                        <button class="priority-action" onclick="openStudentModal(${student.id})">
+                            ${actionText}
+                        </button>
+                    `;
+                    
+                    container.appendChild(item);
+                });
+            }
+        }
+
+        function changeDate() {
+            const currentDate = new Date().toISOString().split('T')[0];
+            const newDate = prompt(`📅 Cambiar fecha de clase:
+
+Fecha actual del sistema: ${new Date().toLocaleDateString('es-ES')}
+
+Ingresa nueva fecha (AAAA-MM-DD):`, currentDate);
+            
+            if (newDate && newDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                const selectedDate = new Date(newDate + 'T12:00:00');
+                
+                if (!isNaN(selectedDate.getTime())) {
+                    const options = {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    };
+                    
+                    const formattedDate = selectedDate.toLocaleDateString('es-ES', options);
+                    document.getElementById('current-date').textContent = formattedDate;
+                } else {
+                    alert('❌ Fecha inválida. Usa el formato AAAA-MM-DD');
+                }
+            }
+        }
+
+        // Renderizar estudiantes
+        function renderStudents() {
+            const grid = document.getElementById('students-grid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+
+            students.forEach((student, index) => {
+                if (!student || !student.name) return; // Validación añadida
+                
+                const card = document.createElement('div');
+                card.className = `student-card ${student.status || 'unassessed'}`;
+                card.onclick = () => openStudentModal(index);
+                
+                const indicators = getIndicators(student.status);
+                const details = getStudentDetails(student);
+                
+                card.innerHTML = `
+                    <div class="student-name">${student.name}</div>
+                    <div class="student-status">${getStatusText(student.status)}</div>
+                    <div class="student-indicators">${indicators}</div>
+                    <div class="student-details">${details}</div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // Obtener texto de estado
+        function getStatusText(status) {
+            const statusMap = {
+                'excellent': 'Domina',
+                'good': 'Comprende',
+                'regular': 'En proceso',
+                'struggling': 'Necesita apoyo',
+                'unassessed': 'Sin evaluar'
+            };
+            return statusMap[status] || 'Sin evaluar';
+        }
+
+        // Obtener indicadores visuales
+        function getIndicators(status) {
+            const indicators = Array(4).fill('').map((_, i) => {
+                let className = 'indicator';
+                if (status === 'excellent' && i < 4) className += ' active-excellent';
+                else if (status === 'good' && i < 3) className += ' active-good';
+                else if (status === 'regular' && i < 2) className += ' active-regular';
+                else if (status === 'struggling' && i < 1) className += ' active-struggling';
+                
+                return `<div class="${className}"></div>`;
+            });
+            
+            return indicators.join('');
+        }
+
+        // Obtener detalles del estudiante
+        function getStudentDetails(student) {
+            if (!student) return '<span>📝</span><span>⏱️</span>'; // Validación añadida
+            
+            if (student.status === 'unassessed' || !student.status) {
+                return '<span>📝</span><span>⏱️</span>';
+            }
+            
+            const time = student.timestamp ? new Date(student.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+            const emoji = {
+                'excellent': '🏆',
+                'good': '👍',
+                'regular': '⚠️',
+                'struggling': '🚨'
+            }[student.status] || '📝';
+            
+            return `<span>${emoji}</span><span>${time}</span>`;
+        }
+
+        // Abrir modal de estudiante
+        function openStudentModal(studentIndex) {
+            if (studentIndex < 0 || studentIndex >= students.length) return; // Validación de índice
+            
+            const student = students[studentIndex];
+            if (!student || !student.name) return; // Validación de objeto
+            
+            currentStudentIndex = studentIndex;
+            selectedEvaluation = null;
+            
+            document.getElementById('modal-title').textContent = `Evaluar: ${student.name}`;
+            document.getElementById('student-modal').style.display = 'block';
+            
+            // Limpiar selecciones
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Deshabilitar botón de guardar
+            document.getElementById('save-btn').disabled = true;
+        }
+
+        // Cerrar modal
+        function closeModal() {
+            document.getElementById('student-modal').style.display = 'none';
+            currentStudentIndex = null;
+            selectedEvaluation = null;
+        }
+
+        // Seleccionar opción
+        function selectOption(evaluation) {
+            selectedEvaluation = evaluation;
+            
+            // Actualizar UI
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            event.target.closest('.option-btn').classList.add('selected');
+            
+            // Habilitar botón de guardar
+            document.getElementById('save-btn').disabled = false;
+        }
+
+        // Guardar evaluación
+        function saveEvaluation() {
+            if (currentStudentIndex === null || !selectedEvaluation) return;
+            if (currentStudentIndex < 0 || currentStudentIndex >= students.length) return; // Validación
+            
+            const student = students[currentStudentIndex];
+            if (!student) return; // Validación de objeto
+            
+            student.status = selectedEvaluation;
+            student.timestamp = new Date();
+            
+            // Ocultar guía inicial después de la primera evaluación
+            const instructionsAlert = document.getElementById('instructions-alert');
+            if (instructionsAlert) {
+                instructionsAlert.style.display = 'none';
+            }
+            
+            // Actualizar vista
+            renderStudents();
+            updateAnalysis();
+            updatePriorityStudents();
+            generateRecommendations();
+            
+            closeModal();
+        }
+
+        // Actualizar análisis
+        function updateAnalysis() {
+            const counts = {
+                excellent: 0,
+                good: 0,
+                regular: 0,
+                struggling: 0,
+                unassessed: 0
+            };
+            
+            students.forEach(student => {
+                if (student && student.status) { // Validación añadida
+                    counts[student.status]++;
+                } else {
+                    counts.unassessed++; // Por defecto si no tiene status
+                }
+            });
+            
+            // Actualizar estadísticas
+            document.getElementById('students-excellent').textContent = counts.excellent;
+            document.getElementById('students-good').textContent = counts.good;
+            document.getElementById('students-regular').textContent = counts.regular;
+            document.getElementById('students-struggling').textContent = counts.struggling;
+            
+            // Actualizar progreso hacia el objetivo
+            const assessed = 20 - counts.unassessed;
+            const successfulStudents = counts.excellent + counts.good;
+            const successRate = assessed > 0 ? Math.round((successfulStudents / assessed) * 100) : 0;
+            
+            document.getElementById('success-progress').style.width = Math.min(successRate, 100) + '%';
+            document.getElementById('success-percentage').textContent = successRate + '%';
+            
+            // Verificar alertas
+            checkAlerts(counts);
+            
+            // Actualizar estudiantes prioritarios
+            updatePriorityStudents();
+        }
+
+        // Verificar alertas
+        function checkAlerts(counts) {
+            const alertDiv = document.getElementById('class-alert');
+            const alertMessage = document.getElementById('alert-message');
+            
+            // Remover clases anteriores
+            alertDiv.classList.remove('success', 'danger');
+            
+            if (counts.struggling >= 6) {
+                alertDiv.classList.add('danger');
+                alertMessage.textContent = `¡Atención! ${counts.struggling} estudiantes necesitan apoyo inmediato. Considera pausar y cambiar la estrategia.`;
+                alertDiv.classList.add('show');
+            } else if (counts.regular >= 10) {
+                alertMessage.textContent = `${counts.regular} estudiantes están en proceso. Refuerza los conceptos antes de continuar.`;
+                alertDiv.classList.add('show');
+            } else if (counts.excellent + counts.good >= 15) {
+                alertDiv.classList.add('success');
+                alertMessage.textContent = `¡Excelente! ${counts.excellent + counts.good} estudiantes dominan o comprenden el tema. Puedes avanzar.`;
+                alertDiv.classList.add('show');
+            } else {
+                alertDiv.classList.remove('show');
+            }
+        }
+
+        // Generar recomendaciones
+        function generateRecommendations() {
+            const container = document.getElementById('recommendations-container');
+            if (!container) return; // Validación del elemento
+            
+            const counts = {
+                excellent: students.filter(s => s && s.status === 'excellent').length,
+                good: students.filter(s => s && s.status === 'good').length,
+                regular: students.filter(s => s && s.status === 'regular').length,
+                struggling: students.filter(s => s && s.status === 'struggling').length,
+                unassessed: students.filter(s => !s || !s.status || s.status === 'unassessed').length
+            };
+            
+            let recommendations = [];
+            const assessed = students.length - counts.unassessed;
+            
+            // Prioridad 1: Estudiantes que necesitan apoyo urgente
+            if (counts.struggling >= 3) {
+                recommendations.push({
+                    title: '🚨 Intervención Inmediata Requerida',
+                    action: `${counts.struggling} estudiantes están teniendo dificultades serias. PAUSA y cambia la estrategia ahora.`,
+                    steps: topicRecommendations[currentTopic].struggling + '. Atiende individualmente a estos estudiantes.',
+                    icon: '🚨',
+                    type: 'urgent'
+                });
+            }
+            
+            // Prioridad 2: Muchos estudiantes en proceso
+            if (counts.regular >= 6) {
+                recommendations.push({
+                    title: '⚠️ Refuerzo Masivo Necesario',
+                    action: `${counts.regular} estudiantes comprenden parcialmente. Detén el avance y refuerza el tema.`,
+                    steps: topicRecommendations[currentTopic].regular + '. Repite la explicación con ejemplos diferentes.',
+                    icon: '⚠️',
+                    type: 'urgent'
+                });
+            }
+            
+            // Prioridad 3: Combinación problemática
+            if (counts.regular >= 4 && counts.struggling >= 2) {
+                recommendations.push({
+                    title: '🔄 Cambio de Estrategia Urgente',
+                    action: 'Demasiados estudiantes no están comprendiendo. Cambia completamente el enfoque.',
+                    steps: 'Usa actividades manipulativas, ejemplos concretos o trabajo en parejas tutoriales.',
+                    icon: '🔄',
+                    type: 'urgent'
+                });
+            }
+            
+            // Aprendizaje colaborativo cuando hay mix de niveles
+            if (counts.good >= 4 && (counts.regular >= 3 || counts.struggling >= 2)) {
+                recommendations.push({
+                    title: '👥 Aprendizaje Colaborativo Inmediato',
+                    action: 'Organiza grupos heterogéneos para apoyo entre pares.',
+                    steps: 'Grupos de 4: 1-2 que comprenden + 2-3 que necesitan apoyo. Asigna roles específicos.',
+                    icon: '👥',
+                    type: 'normal'
+                });
+            }
+            
+            // Evaluar más estudiantes
+            if (counts.unassessed >= 8) {
+                recommendations.push({
+                    title: '📝 Continúa Evaluando',
+                    action: `Te faltan ${counts.unassessed} estudiantes por evaluar. Observa durante la próxima actividad.`,
+                    steps: 'Haz preguntas directas, pide que expliquen o resuelvan en la pizarra.',
+                    icon: '📝',
+                    type: 'normal'
+                });
+            }
+            
+            // Acelerar si van muy bien
+            if (counts.excellent + counts.good >= 15 && assessed >= 18) {
+                recommendations.push({
+                    title: '🚀 Acelera el Ritmo',
+                    action: 'La mayoría domina el tema. Puedes avanzar al siguiente contenido.',
+                    steps: 'Haz síntesis rápida y presenta nuevo desafío.',
+                    icon: '🚀',
+                    type: 'success'
+                });
+            }
+            
+            // Desafío para avanzados
+            if (counts.excellent >= 4) {
+                recommendations.push({
+                    title: '🏆 Desafío para Avanzados',
+                    action: `${counts.excellent} estudiantes dominan el tema. Dales actividades complejas.`,
+                    steps: topicRecommendations[currentTopic].excellent,
+                    icon: '🏆',
+                    type: 'success'
+                });
+            }
+            
+            // Mostrar recomendaciones
+            container.innerHTML = '';
+            
+            if (recommendations.length === 0) {
+                if (assessed < 5) {
+                    container.innerHTML = `
+                        <div class="recommendation-item" data-icon="👋">
+                            <div class="recommendation-title">Comienza Evaluando Estudiantes</div>
+                            <div class="recommendation-action">
+                                Haz clic en cada tarjeta de estudiante para evaluar su comprensión. 
+                                Las recomendaciones pedagógicas aparecerán automáticamente.
+                            </div>
+                            <div class="recommendation-steps"><strong>Importante:</strong> Primero evalúa, después podrás exportar datos útiles.</div>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="recommendation-item" data-icon="✅">
+                            <div class="recommendation-title">Clase en Buen Ritmo</div>
+                            <div class="recommendation-action">
+                                La clase está progresando adecuadamente. Continúa con tu plan de clase.
+                            </div>
+                        </div>
+                    `;
+                }
+            } else {
+                recommendations.forEach((rec, index) => {
+                    const item = document.createElement('div');
+                    item.className = `recommendation-item ${rec.type}`;
+                    item.setAttribute('data-icon', rec.icon);
+                    item.innerHTML = `
+                        <div class="recommendation-title">${rec.title}</div>
+                        <div class="recommendation-action">${rec.action}</div>
+                        <div class="recommendation-steps"><strong>Acción específica:</strong> ${rec.steps}</div>
+                        <button class="implement-btn" onclick="implementRecommendation(${index}, '${rec.title}')">
+                            ✅ Implementado
+                        </button>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+        }
+
+        // Función corregida para exportar datos
+        function exportData() {
+            // VALIDAR QUE HAY DATOS PARA EXPORTAR
+            if (!students || students.length === 0) {
+                alert(`📋 NO HAY ESTUDIANTES REGISTRADOS
+
+❌ No se puede exportar porque no hay estudiantes en el sistema.
+
+🔄 Para solucionar:
+1. Refresca la página
+2. Verifica que la aplicación se haya cargado correctamente`);
+                return;
+            }
+
+            // Contar estudiantes evaluados
+            const evaluatedStudents = students.filter(s => 
+                s && s.status && s.status !== 'unassessed'
+            ).length;
+
+            // Verificar que hay al menos algunas evaluaciones
+            if (evaluatedStudents === 0) {
+                alert(`📝 AÚN NO HAY EVALUACIONES GUARDADAS
+
+❌ No puedes exportar datos porque no has evaluado a ningún estudiante.
+
+📋 PARA EXPORTAR DATOS:
+1. ✅ Evalúa al menos 3-5 estudiantes primero
+2. 👥 Haz clic en las tarjetas de estudiantes
+3. 📊 Selecciona su nivel de comprensión
+4. 💾 Guarda cada evaluación
+5. 📄 Luego podrás exportar un reporte útil
+
+💡 TIP: Evalúa estudiantes durante tu clase y después exporta los resultados para análisis.`);
+                return;
+            }
+
+            // Si hay pocas evaluaciones, avisar pero permitir exportar
+            if (evaluatedStudents < 5) {
+                const shouldContinue = confirm(`⚠️ POCAS EVALUACIONES GUARDADAS
+
+📊 Solo has evaluado ${evaluatedStudents} de ${students.length} estudiantes.
+
+❓ ¿QUIERES CONTINUAR?
+✅ SÍ - Exportar con los datos actuales
+❌ NO - Evaluar más estudiantes primero
+
+💡 Recomendación: Evalúa al menos 10-15 estudiantes para obtener un reporte más completo y útil.`);
+                
+                if (!shouldContinue) {
+                    return;
+                }
+            }
+
+            // Mostrar indicador de carga
+            showLoadingIndicator();
+            
+            // Ejecutar exportación después de un breve delay para mostrar el loading
+            setTimeout(() => {
+                try {
+                    if (xlsxLoaded && typeof XLSX !== 'undefined') {
+                        exportToExcel();
+                    } else {
+                        exportToCSV();
+                    }
+                } catch (error) {
+                    console.error('❌ Error en exportación:', error);
+                    hideLoadingIndicator();
+                    alert(`❌ Error al exportar datos: ${error.message}\n\nIntenta refrescar la página y volver a intentar.`);
+                }
+            }, 500);
+        }
+
+        function exportToExcel() {
+            try {
+                const now = new Date();
+                const dateStr = now.toISOString().split('T')[0];
+                const timeStr = now.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
+                
+                // Calcular estadísticas
+                const counts = getStudentCounts();
+                const assessed = 20 - counts.unassessed;
+                const successRate = assessed > 0 ? Math.round(((counts.excellent + counts.good) / assessed) * 100) : 0;
+                
+                // Crear workbook
+                const workbook = XLSX.utils.book_new();
+                
+                // HOJA 1: Resumen
+                const resumenData = [
+                    ['REPORTE EDUPILOT - RADAR DE CLASE'],
+                    [''],
+                    ['Fecha de generación:', now.toLocaleDateString('es-ES')],
+                    ['Hora:', timeStr],
+                    ['Materia:', 'Matemáticas 3°A'],
+                    ['Tema:', getCurrentTopic()],
+                    ['Total estudiantes:', '20'],
+                    [''],
+                    ['=== ESTADÍSTICAS GENERALES ==='],
+                    ['Estudiantes evaluados:', `${assessed}/20`],
+                    ['Tasa de éxito (Domina + Comprende):', `${successRate}%`],
+                    [''],
+                    ['=== DISTRIBUCIÓN POR NIVEL ==='],
+                    ['🏆 Domina completamente:', counts.excellent, `${Math.round((counts.excellent/assessed)*100)}%`],
+                    ['👍 Comprende bien:', counts.good, `${Math.round((counts.good/assessed)*100)}%`],
+                    ['⚠️ En proceso de aprendizaje:', counts.regular, `${Math.round((counts.regular/assessed)*100)}%`],
+                    ['🚨 Necesita apoyo urgente:', counts.struggling, `${Math.round((counts.struggling/assessed)*100)}%`],
+                    ['📝 Sin evaluar aún:', counts.unassessed, `${Math.round((counts.unassessed/20)*100)}%`]
+                ];
+                
+                const resumenSheet = XLSX.utils.aoa_to_sheet(resumenData);
+                resumenSheet['!cols'] = [{ width: 30 }, { width: 15 }, { width: 15 }];
+                XLSX.utils.book_append_sheet(workbook, resumenSheet, 'Resumen');
+                
+                // HOJA 2: Listado completo de estudiantes
+                const estudiantesData = [
+                    ['LISTADO COMPLETO DE ESTUDIANTES'],
+                    [''],
+                    ['Nombre', 'Estado Actual', 'Nivel Numérico', 'Fecha/Hora Evaluación', 'Observaciones']
+                ];
+                
+                students.forEach(student => {
+                    if (!student || !student.name) return; // Validación añadida
+                    
+                    const timestamp = student.timestamp ? 
+                        new Date(student.timestamp).toLocaleString('es-ES') : 
+                        'Pendiente de evaluación';
+                    
+                    const nivelNumerico = {
+                        'excellent': '4 - Excelente',
+                        'good': '3 - Bueno', 
+                        'regular': '2 - Regular',
+                        'struggling': '1 - Necesita apoyo',
+                        'unassessed': '0 - Sin evaluar'
+                    }[student.status || 'unassessed'];
+                    
+                    const observaciones = getStudentObservations(student.status || 'unassessed');
+                    
+                    estudiantesData.push([
+                        student.name,
+                        getStatusText(student.status || 'unassessed'),
+                        nivelNumerico,
+                        timestamp,
+                        observaciones
+                    ]);
+                });
+                
+                const estudiantesSheet = XLSX.utils.aoa_to_sheet(estudiantesData);
+                estudiantesSheet['!cols'] = [
+                    { width: 25 }, { width: 20 }, { width: 20 }, { width: 25 }, { width: 40 }
+                ];
+                XLSX.utils.book_append_sheet(workbook, estudiantesSheet, 'Lista Estudiantes');
+                
+                // HOJA 3: Estudiantes prioritarios (solo si existen)
+                const priorityStudents = students.filter(s => 
+                    s && s.status && (s.status === 'struggling' || s.status === 'regular') // Validación añadida
+                );
+                
+                if (priorityStudents.length > 0) {
+                    const prioritariosData = [
+                        ['ESTUDIANTES QUE REQUIEREN ATENCIÓN PRIORITARIA'],
+                        [''],
+                        ['Nombre', 'Estado', 'Nivel de Prioridad', 'Acción Recomendada', 'Estrategia Específica']
+                    ];
+                    
+                    priorityStudents
+                        .filter(student => student && student.name) // Validación adicional
+                        .sort((a, b) => a.status === 'struggling' ? -1 : 1) // struggling primero
+                        .forEach(student => {
+                            const priority = student.status === 'struggling' ? 'URGENTE' : 'REFUERZO';
+                            const accion = student.status === 'struggling' ? 
+                                'Intervención inmediata' : 
+                                'Refuerzo adicional';
+                            const estrategia = getRecommendationForStudent(student.status);
+                            
+                            prioritariosData.push([
+                                student.name,
+                                getStatusText(student.status),
+                                priority,
+                                accion,
+                                estrategia
+                            ]);
+                        });
+                    
+                    const prioritariosSheet = XLSX.utils.aoa_to_sheet(prioritariosData);
+                    prioritariosSheet['!cols'] = [
+                        { width: 25 }, { width: 18 }, { width: 15 }, { width: 25 }, { width: 50 }
+                    ];
+                    XLSX.utils.book_append_sheet(workbook, prioritariosSheet, 'Estudiantes Prioritarios');
+                }
+                
+                // Generar nombre de archivo único
+                const filename = `EduPilot_Reporte_${dateStr}_${timeStr.replace(':', '-')}.xlsx`;
+                
+                // Escribir y descargar archivo
+                const wbout = XLSX.write(workbook, {
+                    type: 'array',
+                    bookType: 'xlsx'
+                });
+                
+                const blob = new Blob([wbout], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                
+                downloadFile(blob, filename);
+                
+                hideLoadingIndicator();
+                
+                showSuccessMessage('Excel', filename, assessed, successRate, priorityStudents.length);
+                
+            } catch (error) {
+                console.error('❌ Error en exportación Excel:', error);
+                hideLoadingIndicator();
+                alert('❌ Error al generar archivo Excel. Intentando con formato CSV...');
+                exportToCSV();
+            }
+        }
+
+        function exportToCSV() {
+            try {
+                const now = new Date();
+                const dateStr = now.toISOString().split('T')[0];
+                const timeStr = now.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
+                
+                const counts = getStudentCounts();
+                const assessed = 20 - counts.unassessed;
+                const successRate = assessed > 0 ? Math.round(((counts.excellent + counts.good) / assessed) * 100) : 0;
+                
+                let csvContent = 'REPORTE EDUPILOT - RADAR DE CLASE\n';
+                csvContent += `Fecha de generación,${now.toLocaleDateString('es-ES')}\n`;
+                csvContent += `Hora,${timeStr}\n`;
+                csvContent += `Materia,Matemáticas 3°A\n`;
+                csvContent += `Tema,${getCurrentTopic()}\n`;
+                csvContent += `Total estudiantes,20\n\n`;
+                
+                csvContent += 'ESTADÍSTICAS GENERALES\n';
+                csvContent += `Estudiantes evaluados,${assessed}/20\n`;
+                csvContent += `Tasa de éxito,${successRate}%\n\n`;
+                
+                csvContent += 'DISTRIBUCIÓN POR NIVEL\n';
+                csvContent += `Domina completamente,${counts.excellent}\n`;
+                csvContent += `Comprende bien,${counts.good}\n`;
+                csvContent += `En proceso,${counts.regular}\n`;
+                csvContent += `Necesita apoyo,${counts.struggling}\n`;
+                csvContent += `Sin evaluar,${counts.unassessed}\n\n`;
+                
+                csvContent += 'LISTADO DETALLADO DE ESTUDIANTES\n';
+                csvContent += 'Nombre,Estado,Nivel Numérico,Evaluado en,Observaciones\n';
+                
+                students.forEach(student => {
+                    if (!student || !student.name) return; // Validación añadida
+                    
+                    const timestamp = student.timestamp ? 
+                        new Date(student.timestamp).toLocaleString('es-ES') : 
+                        'Pendiente';
+                    
+                    const nivelNumerico = {
+                        'excellent': '4',
+                        'good': '3',
+                        'regular': '2', 
+                        'struggling': '1',
+                        'unassessed': '0'
+                    }[student.status || 'unassessed'];
+                    
+                    const observaciones = getStudentObservations(student.status || 'unassessed');
+                    
+                    csvContent += `"${student.name}","${getStatusText(student.status || 'unassessed')}","${nivelNumerico}","${timestamp}","${observaciones}"\n`;
+                });
+                
+                // Agregar estudiantes prioritarios si existen
+                const priorityStudents = students.filter(s => 
+                    s && s.status && (s.status === 'struggling' || s.status === 'regular') // Validación añadida
+                );
+                
+                if (priorityStudents.length > 0) {
+                    csvContent += '\nESTUDIANTES PRIORITARIOS\n';
+                    csvContent += 'Nombre,Estado,Prioridad,Acción Recomendada\n';
+                    
+                    priorityStudents.forEach(student => {
+                        if (!student || !student.name) return; // Validación adicional
+                        
+                        const priority = student.status === 'struggling' ? 'URGENTE' : 'REFUERZO';
+                        const accion = student.status === 'struggling' ? 
+                            'Intervención inmediata' : 
+                            'Refuerzo adicional';
+                        
+                        csvContent += `"${student.name}","${getStatusText(student.status)}","${priority}","${accion}"\n`;
+                    });
+                }
+                
+                const filename = `EduPilot_Reporte_${dateStr}_${timeStr.replace(':', '-')}.csv`;
+                
+                const blob = new Blob([csvContent], { 
+                    type: 'text/csv;charset=utf-8;' 
+                });
+                
+                downloadFile(blob, filename);
+                
+                hideLoadingIndicator();
+                
+                showSuccessMessage('CSV', filename, assessed, successRate, priorityStudents.length);
+                
+            } catch (error) {
+                console.error('❌ Error en exportación CSV:', error);
+                hideLoadingIndicator();
+                alert(`❌ Error al exportar datos: ${error.message}`);
+            }
+        }
+
+        // Funciones auxiliares para exportación
+        function getStudentCounts() {
+            const counts = {
+                excellent: 0,
+                good: 0,
+                regular: 0,
+                struggling: 0,
+                unassessed: 0
+            };
+            
+            students.forEach(student => {
+                if (student && student.status) { // Validación añadida
+                    counts[student.status]++;
+                } else {
+                    counts.unassessed++; // Por defecto si no tiene status
+                }
+            });
+            
+            return counts;
+        }
+
+        function getCurrentTopic() {
+            return document.getElementById('current-topic').textContent.replace('Tema: ', '');
+        }
+
+        function getStudentObservations(status) {
+            const observations = {
+                'excellent': 'Comprende perfectamente, puede ayudar a otros',
+                'good': 'Participa activamente, comprende conceptos principales',
+                'regular': 'Comprensión parcial, necesita más práctica',
+                'struggling': 'Requiere atención individualizada urgente',
+                'unassessed': 'Pendiente de evaluación'
+            };
+            return observations[status] || 'Sin observaciones';
+        }
+
+        function getRecommendationForStudent(status) {
+            return topicRecommendations[currentTopic][status] || 'Seguir estrategia general';
+        }
+
+        function downloadFile(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.style.display = 'none';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Limpiar URL después de un breve delay
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+            }, 1000);
+        }
+
+        function showLoadingIndicator() {
+            document.getElementById('loading-indicator').classList.add('show');
+        }
+
+        function hideLoadingIndicator() {
+            document.getElementById('loading-indicator').classList.remove('show');
+        }
+
+        function showSuccessMessage(fileType, filename, assessed, successRate, priorityCount) {
+            const message = `🎉 ¡ARCHIVO ${fileType.toUpperCase()} GENERADO EXITOSAMENTE!
+
+📄 Archivo: ${filename}
+📊 Datos exportados:
+   • ${assessed} evaluaciones de 20 estudiantes
+   • Tasa de éxito: ${successRate}%
+   • ${priorityCount} estudiantes prioritarios
+
+📋 HOJAS/SECCIONES INCLUIDAS:
+   • Resumen estadístico general
+   • Lista completa de estudiantes con detalles
+   ${priorityCount > 0 ? '   • Estudiantes que requieren atención prioritaria' : ''}
+
+✅ El archivo se ha descargado automáticamente
+📁 Revisa tu carpeta de Descargas
+
+💡 Este reporte puedes:
+   • Compartirlo con coordinación académica
+   • Usarlo para planificar intervenciones
+   • Guardarlo como evidencia pedagógica
+   • Incluirlo en informes de seguimiento
+
+🚀 ¡EduPilot te ayuda a tomar mejores decisiones pedagógicas!`;
+
+            alert(message);
+        }
+
+        // Reiniciar todo
+        function resetAll() {
+            const confirmed = confirm(`🔄 REINICIAR EDUPILOT
+
+¿Estás seguro de que quieres:
+• Borrar todas las evaluaciones
+• Comenzar desde cero
+
+Esta acción no se puede deshacer.`);
+            
+            if (confirmed) {
+                // Reiniciar estudiantes con validación
+                students.forEach(student => {
+                    if (student) { // Validación añadida
+                        student.status = 'unassessed';
+                        student.timestamp = null;
+                    }
+                });
+                
+                // Actualizar interfaz
+                renderStudents();
+                updateAnalysis();
+                updatePriorityStudents();
+                generateRecommendations();
+                
+                // Mostrar guía inicial nuevamente
+                const instructionsAlert = document.getElementById('instructions-alert');
+                if (instructionsAlert) {
+                    instructionsAlert.style.display = 'block';
+                }
+                
+                // Mostrar confirmación
+                setTimeout(() => {
+                    alert('✅ REINICIO COMPLETADO\n\nTodas las evaluaciones han sido eliminadas.\nPuedes comenzar la evaluación nuevamente.');
+                }, 200);
+            }
+        }
+
+        // Implementar recomendación
+        function implementRecommendation(index, title) {
+            const btn = event.target;
+            btn.textContent = '✅ Implementado';
+            btn.classList.add('implemented');
+            btn.disabled = true;
+            
+            // Regenerar recomendaciones después de 2 segundos
+            setTimeout(() => {
+                generateRecommendations();
+            }, 2000);
+        }
+
+        // Mostrar instrucciones
+        function showInstructions() {
+            const message = `📋 GUÍA COMPLETA DE EDUPILOT
+
+🎯 FLUJO DE TRABAJO CORRECTO:
+
+1️⃣ EVALUAR ESTUDIANTES:
+• Después de explicar un concepto (10-15 min)
+• Haz clic en cada tarjeta de estudiante
+• Evalúa su nivel de comprensión actual
+• Guarda cada evaluación
+
+2️⃣ ANALIZAR EN TIEMPO REAL:
+• Las recomendaciones aparecen automáticamente
+• Implementa sugerencias urgentes inmediatamente
+• Usa aprendizaje colaborativo cuando hay mix de niveles
+
+3️⃣ EXPORTAR REPORTES:
+• Una vez evaluados al menos 5-10 estudiantes
+• Haz clic en "Exportar datos" 
+• Obtienes archivo Excel/CSV completo
+• Incluye estadísticas y recomendaciones
+
+🎯 OBJETIVO:
+• Lograr 75% "Domina" o "Comprende"
+• Intervenir cuando muchos están "En proceso"
+• Cambiar estrategia si hay muchos "Necesita apoyo"
+
+⚠️ IMPORTANTE:
+• PRIMERO evalúa, DESPUÉS exporta
+• Sin evaluaciones no hay datos que exportar
+• El botón de exportar muestra cuántas evaluaciones tienes
+
+✅ ¡EduPilot te guía para el éxito de todos!`;
+
+            alert(message);
+        }
+
+        // Funciones del selector de tema
+        function openTopicSelector() {
+            document.getElementById('topic-modal').style.display = 'block';
+        }
+
+        function closeTopicModal() {
+            document.getElementById('topic-modal').style.display = 'none';
+            selectedTopic = null;
+            document.getElementById('confirm-topic-btn').disabled = true;
+            document.querySelectorAll('.topic-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+        }
+
+        function selectTopic(topicKey, topicName) {
+            selectedTopic = { key: topicKey, name: topicName };
+            
+            document.querySelectorAll('.topic-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            event.target.closest('.topic-btn').classList.add('selected');
+            document.getElementById('confirm-topic-btn').disabled = false;
+        }
+
+        function confirmTopic() {
+            if (selectedTopic) {
+                currentTopic = selectedTopic.key;
+                document.getElementById('current-topic').textContent = `Tema: ${selectedTopic.name}`;
+                
+                generateRecommendations();
+                closeTopicModal();
+                
+                alert(`✅ Tema actualizado a: ${selectedTopic.name}`);
+            }
+        }
+
+        // Cerrar modales al hacer clic fuera
+        window.onclick = function(event) {
+            const studentModal = document.getElementById('student-modal');
+            const topicModal = document.getElementById('topic-modal');
+            
+            if (event.target === studentModal) {
+                closeModal();
+            }
+            
+            if (event.target === topicModal) {
+                closeTopicModal();
+            }
+        }
+
+        // Verificar periódicamente la carga de XLSX
+        function recheckXLSX() {
+            if (!xlsxLoaded && typeof XLSX !== 'undefined') {
+                xlsxLoaded = true;
+            }
+        }
+
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            
+            // Verificar XLSX nuevamente después de 2 segundos por si se carga tarde
+            setTimeout(recheckXLSX, 2000);
+        });
+    </script>
+</body>
+</html>
